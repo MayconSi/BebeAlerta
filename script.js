@@ -6,9 +6,9 @@ var CONFIG = {
   defaultMessage: "Olá! Quero começar a usar o BebêAlerta.",
 
   professional: {
-    name: "Julia Maria Oliveira Da Silva",   // ex.: "Maria Souza"
-    role: "Técnica De Enfermagem, COREN-BA nº 002389551",   // ex.: "Enfermeira, COREN-BA nº 000000"
-    unit: ""    // ex.: "UBS Centro"
+    name: "Julia Maria Oliveira Da Silva",  
+    role: "Técnica De Enfermagem, COREN-BA nº 002389551",   
+    unit: ""   
   }
 };
 
@@ -23,7 +23,7 @@ var CONFIG = {
   /* ---------- WhatsApp ---------- */
   function cleanNumber(raw) {
     var n = String(raw || "").replace(/\D/g, "");
-    if (n && n.length <= 11) n = "55" + n; // sem DDI: assume Brasil
+    if (n && n.length <= 11) n = "55" + n; 
     return n;
   }
   var number = cleanNumber(CONFIG.whatsappNumber);
@@ -45,8 +45,8 @@ var CONFIG = {
     var qr = $("#qr");
     if (!waUrl) {
       $("#setupNote").hidden = false;
-      qr.textContent = "O QR Code aparece aqui quando o número for configurado.";
-      if (window.console) console.warn("BebêAlerta: defina CONFIG.whatsappNumber no começo do script.js.");
+      qr.textContent = "O QR Code.";
+      if (window.console) console.warn("CONFIG.whatsappNumber");
       return;
     }
     var el = $("#waNumber");
