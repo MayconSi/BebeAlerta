@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BebêAlerta | Seu pré-natal em dia, direto no WhatsApp</title>
+  <meta name="description" content="O BebêAlerta é um chatbot de WhatsApp que lembra gestantes de consultas de pré-natal, exames e vacinas, e responde dúvidas sobre vacinação com base em fontes oficiais do Ministério da Saúde.">
+  <meta name="theme-color" content="#1457D1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+
+<!-- ícones reutilizáveis -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-whatsapp" viewBox="0 0 24 24"><path fill="currentColor" d="M12.04 2a9.9 9.9 0 0 0-8.5 14.95L2 22l5.2-1.5A9.9 9.9 0 1 0 12.04 2zm0 1.8a8.1 8.1 0 1 1-4.2 15l-.3-.18-3.08.9.92-3-.2-.31A8.1 8.1 0 0 1 12.04 3.8zM8.6 7.5c-.2 0-.5.07-.75.35-.26.28-1 .98-1 2.4s1.03 2.78 1.17 2.97c.14.2 2 3.2 4.95 4.36 2.45.96 2.95.77 3.48.72.53-.05 1.7-.7 1.94-1.37.24-.68.24-1.26.17-1.38-.07-.12-.26-.2-.55-.34-.28-.14-1.7-.84-1.97-.94-.26-.1-.45-.14-.64.14-.2.29-.74.94-.9 1.13-.17.2-.34.22-.62.08-.29-.14-1.2-.44-2.28-1.4-.85-.76-1.42-1.7-1.58-1.98-.17-.29-.02-.44.12-.58.13-.13.29-.34.43-.5.14-.17.19-.29.29-.48.1-.2.05-.36-.02-.5-.07-.15-.64-1.58-.9-2.16-.23-.5-.47-.5-.65-.5z"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.2A8.4 8.4 0 1 1 21 11.5z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></symbol>
+    <symbol id="i-syringe" viewBox="0 0 24 24"><path d="m18 2 4 4M17 7l3-3M19 9 8.7 19.3a2.1 2.1 0 0 1-3 0l-1-1a2.1 2.1 0 0 1 0-3L15 5M9 11l4 4M5 19l-3 3M14 4l6 6"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+    <symbol id="i-replay" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+  </defs>
+</svg>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<!-- MENU -->
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="brand" href="#inicio" aria-label="BebêAlerta, ir para o início">
+      <span class="brand-mark" aria-hidden="true"><svg class="ic"><use href="#i-bell"/></svg></span>
+      <span>Bebê<b>Alerta</b></span>
+    </a>
+    <button class="burger" id="burger" aria-label="Abrir menu" aria-expanded="false" aria-controls="menu">
+      <svg class="ic open"><use href="#i-menu"/></svg>
+      <svg class="ic close"><use href="#i-x"/></svg>
+    </button>
+    <nav class="menu" id="menu" aria-label="Principal">
+      <a href="#como-funciona" data-spy="como-funciona">Como funciona</a>
+      <a href="#sua-semana" data-spy="sua-semana">Sua semana</a>
+      <a href="#vacinas" data-spy="vacinas">Vacinas</a>
+      <a href="#conversa" data-spy="conversa">Pergunte</a>
+      <a href="#confianca" data-spy="confianca">Confiança</a>
+      <a href="#duvidas" data-spy="duvidas">Dúvidas</a>
+      <a class="btn btn-wa nav-cta" href="#contato" data-wa>
+        <svg class="ic fill"><use href="#i-whatsapp"/></svg> Falar no WhatsApp
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="hero-bg" aria-hidden="true">
+    <span class="bubble b1"></span><span class="bubble b2"></span><span class="bubble b3"></span>
+    <span class="bubble b4"></span><span class="bubble b5"></span>
+  </div>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="pill"><svg class="ic"><use href="#i-heart"/></svg> Projeto de extensão universitária</span>
+      <h1>Sua gravidez <span class="squiggle">em dia</span>, direto no WhatsApp</h1>
+      <p class="lead">O BebêAlerta lembra você das consultas de pré-natal, dos exames e das vacinas da gestação, e responde dúvidas sobre vacinação com base em documentos oficiais do Ministério da Saúde.</p>
+      <div class="cta-row">
+        <a class="btn btn-main pulse" href="#contato" data-wa><svg class="ic fill"><use href="#i-whatsapp"/></svg> Começar no WhatsApp</a>
+        <a class="btn btn-ghost" href="#sua-semana">Descobrir minha semana <svg class="ic"><use href="#i-arrow"/></svg></a>
+      </div>
+      <ul class="stats">
+        <li><b data-count="40">40</b><span>semanas acompanhadas</span></li>
+        <li><b data-count="6">6</b><span>vacinas do calendário da gestante</span></li>
+        <li><b data-count="0">0</b><span>aplicativos para instalar</span></li>
+      </ul>
+    </div>
+
+    <div class="hero-phone">
+      <div class="phone" role="img" aria-label="Exemplo de conversa com o BebêAlerta no WhatsApp">
+        <div class="phone-top">
+          <span class="avatar">B</span>
+          <span><b>BebêAlerta</b><small>online</small></span>
+        </div>
+        <div class="chat" id="heroChat" aria-live="off"></div>
+      </div>
+      <div class="phone-foot">
+        <span>Exemplo ilustrativo da conversa</span>
+        <button class="link-btn" id="heroReplay" type="button"><svg class="ic"><use href="#i-replay"/></svg> Ver de novo</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section class="steps-sec" id="como-funciona">
+  <div class="wrap">
+    <div class="head" data-reveal>
+      <p class="eyebrow">Como funciona</p>
+      <h2>Do primeiro “oi” ao lembrete, em cinco passos</h2>
+      <p>Você não instala nada. Tudo acontece na conversa do WhatsApp que você já usa todo dia.</p>
+    </div>
+    <ol class="steps">
+      <li data-reveal style="--d:0ms">
+        <span class="step-ic"><svg class="ic"><use href="#i-chat"/></svg></span>
+        <h3>Mande um “oi”</h3>
+        <p>Toque no botão ou escaneie o QR Code para abrir a conversa com a mensagem já pronta.</p>
+      </li>
+      <li data-reveal style="--d:90ms">
+        <span class="step-ic"><svg class="ic"><use href="#i-lock"/></svg></span>
+        <h3>Dê o consentimento</h3>
+        <p>O BebêAlerta explica o uso dos seus dados e só segue se você aceitar.</p>
+      </li>
+      <li data-reveal style="--d:180ms">
+        <span class="step-ic"><svg class="ic"><use href="#i-calendar"/></svg></span>
+        <h3>Conte a data provável do parto</h3>
+        <p>Com seu nome e essa data, o sistema calcula em que semana da gestação você está.</p>
+      </li>
+      <li data-reveal style="--d:270ms">
+        <span class="step-ic"><svg class="ic"><use href="#i-bell"/></svg></span>
+        <h3>Receba os lembretes</h3>
+        <p>Avisos de consultas, exames e vacinas, de acordo com a semana em que você está.</p>
+      </li>
+      <li data-reveal style="--d:360ms">
+        <span class="step-ic"><svg class="ic"><use href="#i-syringe"/></svg></span>
+        <h3>Pergunte sobre vacinas</h3>
+        <p>Dúvidas gerais sobre vacinação na gravidez são respondidas com base em fontes oficiais.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<div class="divider" style="background:#fff;color:var(--navy)" aria-hidden="true">
+  <svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0,40 C240,90 480,0 720,34 C960,68 1200,80 1440,18 L1440,80 L0,80 Z"/></svg>
+</div>
+
+<!-- SUA SEMANA (simulador) -->
+<section class="week" id="sua-semana">
+  <div class="wrap">
+    <div class="head light" data-reveal>
+      <p class="eyebrow">Teste agora</p>
+      <h2>Descubra o que vale para a sua semana</h2>
+      <p>Informe a data provável do parto ou arraste a barra. É uma amostra de como o BebêAlerta organiza os lembretes. Nada do que você digitar aqui é enviado ou guardado.</p>
+    </div>
+
+    <div class="week-card" data-reveal>
+      <div class="week-top">
+        <div class="ring-box">
+          <svg class="ring" viewBox="0 0 140 140" aria-hidden="true">
+            <circle class="ring-bg" cx="70" cy="70" r="60"/>
+            <circle class="ring-fg" id="ringFg" cx="70" cy="70" r="60"/>
+          </svg>
+          <div class="ring-num"><b id="weekNum" aria-live="polite">20</b><span>semanas</span></div>
+        </div>
+
+        <div class="week-controls">
+          <label for="dpp">Data provável do parto (DPP)</label>
+          <div class="dpp-row">
+            <input type="date" id="dpp">
+            <button class="btn btn-main" id="dppBtn" type="button">Calcular</button>
+          </div>
+          <p class="msg" id="dppMsg" role="status"></p>
+
+          <label for="weekRange" class="range-label">Ou escolha as semanas de gestação: <b id="weekOut">20</b></label>
+          <div class="scrub" id="scrub">
+            <div class="zones" aria-hidden="true">
+              <span class="z z1"></span><span class="z z2"></span><span class="z z3"></span>
+            </div>
+            <span class="pin" style="--p:28.2" aria-hidden="true"><i>12</i></span>
+            <span class="pin" style="--p:48.7" aria-hidden="true"><i>20</i></span>
+            <span class="pin" style="--p:69.2" aria-hidden="true"><i>28</i></span>
+            <input type="range" id="weekRange" min="1" max="40" value="20" step="1">
+          </div>
+          <div class="zone-legend" aria-hidden="true">
+            <span><i class="k1"></i>Consultas mensais</span>
+            <span><i class="k2"></i>Quinzenais</span>
+            <span><i class="k3"></i>Semanais</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="week-grid" id="weekGrid"></div>
+      <p class="fine">Estimativa ilustrativa baseada no Calendário Nacional de Vacinação 2026 (gestante) e na página de pré-natal do Ministério da Saúde. A sua equipe de saúde define o calendário exato do seu caso.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider" style="background:var(--navy);color:var(--ice)" aria-hidden="true">
+  <svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0,30 C260,80 520,0 780,36 C1040,72 1240,70 1440,24 L1440,80 L0,80 Z"/></svg>
+</div>
+
+<!-- VACINAS -->
+<section class="vacc" id="vacinas">
+  <div class="wrap">
+    <div class="head" data-reveal>
+      <p class="eyebrow">Vacinas da gestante</p>
+      <h2>O que o calendário oficial recomenda</h2>
+      <p>Toque em cada cartão para virar. As informações vêm do Calendário Nacional de Vacinação 2026, ciclo de vida da gestante (Ministério da Saúde/PNI, atualizado em 04/02/2026).</p>
+    </div>
+    <div class="flips" id="flips"></div>
+  </div>
+</section>
+
+<!-- CONVERSA -->
+<section class="talk" id="conversa">
+  <div class="wrap talk-grid">
+    <div class="head" data-reveal>
+      <p class="eyebrow">Pergunte ao BebêAlerta</p>
+      <h2>Veja como ele responde dúvidas sobre vacinas</h2>
+      <p>Escolha uma pergunta e veja um exemplo de resposta. No WhatsApp você pode escrever com as suas próprias palavras, e a resposta sempre se baseia nos documentos oficiais.</p>
+      <div class="chips" id="askChips" role="group" aria-label="Perguntas de exemplo"></div>
+    </div>
+    <div class="phone phone-wide" data-reveal>
+      <div class="phone-top">
+        <span class="avatar">B</span>
+        <span><b>BebêAlerta</b><small>responde com fontes oficiais</small></span>
+      </div>
+      <div class="chat" id="askChat" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONFIANÇA -->
+<section class="trust" id="confianca">
+  <div class="wrap">
+    <div class="head" data-reveal>
+      <p class="eyebrow">Confiança</p>
+      <h2>De onde vêm as informações</h2>
+    </div>
+    <div class="trust-grid">
+      <article class="panel panel-main" data-reveal>
+        <span class="panel-ic"><svg class="ic"><use href="#i-shield"/></svg></span>
+        <h3>Fontes oficiais e conferência profissional</h3>
+        <p>Os lembretes e as respostas usam apenas o <strong>Calendário Nacional de Vacinação 2026, ciclo de vida da gestante</strong> (Ministério da Saúde/PNI) e a página de <strong>Pré-natal</strong> do Ministério da Saúde.</p>
+        <p id="validador" class="validador"><svg class="ic"><use href="#i-check"/></svg> <span id="validadorTxt">Esse conteúdo foi conferido por profissional de saúde.</span></p>
+      </article>
+      <article class="panel" data-reveal style="--d:120ms">
+        <span class="panel-ic"><svg class="ic"><use href="#i-heart"/></svg></span>
+        <h3>O que o BebêAlerta não faz</h3>
+        <ul>
+          <li>Não faz diagnóstico e não indica tratamento.</li>
+          <li>Não substitui consulta com médico, enfermeiro ou a equipe da sua unidade de saúde.</li>
+          <li>Não acompanha o bebê depois do nascimento. O foco é a gestação.</li>
+          <li>Em caso de sintoma ou dúvida sobre a sua saúde, procure sua unidade de saúde.</li>
+        </ul>
+      </article>
+      <article class="panel" data-reveal style="--d:240ms">
+        <span class="panel-ic"><svg class="ic"><use href="#i-lock"/></svg></span>
+        <h3>Seus dados</h3>
+        <p>O BebêAlerta pede apenas o seu nome e a data provável do parto, e antes de guardar qualquer informação pede o seu consentimento, de acordo com a LGPD. Usamos esses dados somente para gerar os lembretes.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-sec" id="duvidas">
+  <div class="wrap faq-grid">
+    <div class="head" data-reveal>
+      <p class="eyebrow">Dúvidas frequentes</p>
+      <h2>Antes de começar</h2>
+      <p>Não achou a sua dúvida? Mande uma mensagem no WhatsApp que a equipe responde.</p>
+    </div>
+    <div class="faq" data-reveal>
+      <details><summary>Preciso instalar algum aplicativo?</summary><p>Não. Você só precisa do WhatsApp no seu celular.</p></details>
+      <details><summary>Que dados o BebêAlerta pede?</summary><p>Seu nome a data provável do parto (DPP) ou a data da última menstruação(DUM). Antes de guardar qualquer informação, ele pede o seu consentimento.</p></details>
+      <details><summary>Posso tirar dúvidas sobre sintomas?</summary><p>Não. As dúvidas respondidas são sobre vacinação na gestação. Para sintomas ou qualquer preocupação com a sua saúde, procure a sua unidade de saúde.</p></details>
+      <details><summary>O BebêAlerta acompanha o bebê depois que ele nascer?</summary><p>Não. O foco é o período da gestação: consultas de pré-natal e vacinas da gestante.</p></details>
+      <details><summary>É um serviço oficial do SUS?</summary><p>Não. É um projeto acadêmico de extensão universitária que usa materiais oficiais do Ministério da Saúde como base.</p></details>
+      <details><summary>Tem custo?</summary><p>O BebêAlerta é um projeto acadêmico e não cobra pelo uso. A conversa usa a sua internet normal, como qualquer mensagem de WhatsApp.</p></details>
+    </div>
+  </div>
+</section>
+
+<div class="divider" style="background:#fff;color:var(--blue)" aria-hidden="true">
+  <svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0,44 C220,0 460,80 720,40 C980,0 1220,70 1440,30 L1440,80 L0,80 Z"/></svg>
+</div>
+
+<!-- CTA / WHATSAPP -->
+<section class="cta" id="contato">
+  <div class="hero-bg" aria-hidden="true">
+    <span class="bubble b1"></span><span class="bubble b3"></span><span class="bubble b5"></span>
+  </div>
+  <div class="wrap cta-grid">
+    <div class="qr-card" data-reveal>
+      <div class="qr" id="qr" aria-label="QR Code para abrir a conversa com o BebêAlerta no WhatsApp"></div>
+      <small>Aponte a câmera do celular</small>
+    </div>
+    <div class="cta-copy" data-reveal style="--d:120ms">
+      <h2>Pronto para começar?</h2>
+      <p>Toque no botão e o WhatsApp abre direto na conversa com o BebêAlerta, com esta mensagem já escrita:</p>
+      <div class="preview-msg" id="previewMsg">Olá! Quero começar a usar o BebêAlerta.</div>
+      <div class="cta-row">
+        <a class="btn btn-white" id="ctaBtn" href="#contato" data-wa target="_blank" rel="noopener">
+          <svg class="ic fill wa-green"><use href="#i-whatsapp"/></svg> Abrir conversa no WhatsApp
+        </a>
+      </div>
+      <p class="number" id="waNumber" hidden></p>
+      <p class="setup-note" id="setupNote" hidden>Número do WhatsApp ainda não configurado. Defina-o no começo do arquivo script.js.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="foot">
+  <div class="wrap foot-grid">
+    <div>
+      <a class="brand brand-light" href="#inicio">
+        <span class="brand-mark" aria-hidden="true"><svg class="ic"><use href="#i-bell"/></svg></span>
+        <span>Bebê<b>Alerta</b></span>
+      </a>
+      <p class="foot-text">Chatbot de WhatsApp para acompanhamento do pré-natal e da vacinação durante a gestação.</p>
+    </div>
+    <nav aria-label="Rodapé">
+      <h4>Navegue</h4>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#sua-semana">Sua semana</a>
+      <a href="#vacinas">Vacinas</a>
+      <a href="#conversa">Pergunte</a>
+      <a href="#duvidas">Dúvidas</a>
+    </nav>
+    <div>
+      <h4>Fontes</h4>
+      <a href="https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/g/gravidez/pre-natal" target="_blank" rel="noopener">Pré-natal, Ministério da Saúde</a>
+      <p class="foot-small">Calendário Nacional de Vacinação 2026, ciclo de vida da gestante (PNI/MS, atualizado em 04/02/2026).</p>
+    </div>
+    <div>
+      <h4>Aviso</h4>
+      <p class="foot-small">Ferramenta de apoio e lembrete. Não faz diagnóstico, não prescreve e não substitui o acompanhamento por profissionais de saúde.</p>
+    </div>
+  </div>
+  <div class="wrap foot-bar">
+    <span>© <span id="year">2026</span> BebêAlerta · Projeto de extensão universitária, curso de Sistemas de Informação</span>
+    <a href="#inicio" class="to-top">Voltar ao topo <svg class="ic up"><use href="#i-arrow"/></svg></a>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" defer></script>
+<script src="script.js" defer></script>
+</body>
+</html>
